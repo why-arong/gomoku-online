@@ -19,7 +19,7 @@ function Board({ squares, xIsNext, onPlay }) {
     } else {
       nextSquares[i] = "O";
     }
-    onPlay(nextSquares);
+    onPlay(nextSquares, i);
   }
   let status;
   const winner = calculateWinner(squares);
@@ -53,13 +53,16 @@ function Board({ squares, xIsNext, onPlay }) {
 function Game() {
   const [history, setHistory] = useState([Array(9).fill(null)]);
   const [currentMove, setCurrentMove] = useState(0);
+  const [location, setLocation] = useState([Array(2).fill(null)]);
   const currentSquares = history[currentMove];
   const xIsNext = currentMove % 2 === 0;
-
-  function handlePlay(nextSquares) {
+  console.log(location);
+  function handlePlay(nextSquares, i) {
     const nextHistory = [...history.slice(0, currentMove + 1), nextSquares];
+    const nextLocation = [i % 3, parseInt(i / 3)];
     setHistory(nextHistory);
     setCurrentMove(nextHistory.length - 1);
+    setLocation([...location.slice(0, currentMove + 1), nextLocation]);
   }
   function jumpTo(nextMove) {
     setCurrentMove(nextMove);
@@ -71,9 +74,13 @@ function Game() {
     } else {
       description = "Go to Start";
     }
+    const [row, col] = [location[move][0], location[move][1]];
+
+    const location_description = row ? " row: " + row + " col: " + col : "";
     return (
       <div>
         <button onClick={() => jumpTo(move)}>{description}</button>
+        {location_description}
       </div>
     );
   });
@@ -109,3 +116,12 @@ function calculateWinner(squares) {
   return null;
 }
 export default Game;
+
+// TODO
+/* 
+1. For the current move only, show “You are at move #…” instead of a button.
+3. Add a toggle button that lets you sort the moves in either ascending or descending order.
+4. When someone wins, highlight the three squares that caused the win (and when no one wins, display a message about the result being a draw).
+5. Display the location for each move in the format (row, col) in the move history list.
+
+*/
